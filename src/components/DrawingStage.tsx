@@ -60,9 +60,11 @@ export function DrawingStage({
 
   const handleCanvasInteraction = () => {
     if (!selectedColor) {
-      // Show color selection hint
-      setShowColorHint(true);
-      setTimeout(() => setShowColorHint(false), 2000);
+      // Show color selection hint (only on desktop)
+      if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+        setShowColorHint(true);
+        setTimeout(() => setShowColorHint(false), 2000);
+      }
       return false;
     }
     return true;
@@ -220,13 +222,13 @@ export function DrawingStage({
         )}
 
         {/* Top Bar with Stage Info - Centered */}
-        <div className="relative z-10 flex justify-center items-start p-8">
+        <div className="relative z-10 flex justify-center items-start p-8 pb-2 lg:pb-4">
           <div className="flex flex-col items-center">
             <p className="text-sm text-white/70 mb-2">Stage {stageNumber} of 4</p>
-            <h1 className="text-3xl text-white mb-4">{title}</h1>
+            <h1 className="text-xl lg:text-3xl text-white mb-2 lg:mb-4">{title}</h1>
             
-            {/* Mobile Remember Text */}
-            <div className="lg:hidden text-center max-w-md">
+            {/* Mobile Remember Text - Hidden as requested */}
+            <div className="hidden">
               <h3 className="text-white mb-2">Remember</h3>
               <p className="text-white/80 text-sm leading-relaxed">
                 There is no right or wrong in your drawing – just an expression of kindness. 
@@ -235,6 +237,49 @@ export function DrawingStage({
             </div>
           </div>
         </div>
+
+        {/* Mobile Color Palette - Directly under title */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="relative z-10 flex justify-center px-8 mb-2 lg:hidden"
+        >
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 shadow-lg">
+            <div className="flex space-x-2 justify-center">
+              {colorPalette.map((colorOption) => (
+                <Tooltip key={colorOption.color}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setSelectedColor(colorOption.color)}
+                      className={`mobile-interactive relative w-10 h-10 rounded-lg transition-all duration-200 z-50 ${
+                        selectedColor === colorOption.color 
+                          ? 'ring-2 ring-white/90 shadow-lg scale-110' 
+                          : 'ring-1 ring-white/40 hover:ring-white/60 shadow-md hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: colorOption.color }}
+                    >
+                      {/* Simple selection indicator */}
+                      {selectedColor === colorOption.color && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute inset-2 bg-white/30 rounded-sm"
+                        />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <div className="space-y-1">
+                      <p className="font-medium">{colorOption.name}</p>
+                      <p className="text-sm text-muted-foreground">{colorOption.meaning}</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          </div>
+        </motion.div>
 
         {/* Remember Section - Top Left */}
         <motion.div
@@ -253,7 +298,7 @@ export function DrawingStage({
         </motion.div>
 
         {/* Main Layout - Canvas and Color Palette */}
-        <div className="relative z-10 flex items-center justify-center px-8 pb-8 h-[calc(100vh-140px)]">
+        <div className="relative z-10 flex items-center justify-center px-8 pb-8 h-[calc(100dvh-180px)] lg:h-[calc(100vh-140px)]">
 
           {/* Canvas Container - Centered with maximum size */}
           <motion.div
@@ -262,8 +307,9 @@ export function DrawingStage({
             transition={{ delay: 0.6 }}
             className="flex flex-col items-center justify-center relative"
           >
+
             <div className="relative">
-              {/* Color Selection Hint Above Canvas */}
+              {/* Color Selection Hint Above Canvas - Hidden on mobile */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ 
@@ -271,7 +317,7 @@ export function DrawingStage({
                   y: showColorHint ? 0 : -10
                 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute -top-12 left-1/2 -translate-x-1/2 z-30 pointer-events-none"
+                className="absolute -top-12 left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden lg:block"
               >
                 <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-4 py-2 rounded-xl shadow-md border border-white/50">
                   <p className="text-sm whitespace-nowrap">
@@ -283,8 +329,8 @@ export function DrawingStage({
               <MandalaCanvas
                 size={typeof window !== 'undefined' ? Math.min(
                   800, // Maximum size increased
-                  window.innerWidth > 1400 ? window.innerWidth * 0.5 : window.innerWidth * 0.65, // Larger on big screens
-                  window.innerHeight * 0.55
+                  window.innerWidth > 1400 ? window.innerWidth * 0.5 : window.innerWidth * 0.8, // Even larger on mobile
+                  window.innerWidth > 1024 ? window.innerHeight * 0.55 : window.innerHeight * 0.6 // More space on mobile
                 ) : 600}
                 layers={mandalaLayers}
                 currentColor={selectedColor}
@@ -300,12 +346,12 @@ export function DrawingStage({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="mt-8"
+              className="mt-3 lg:mt-4"
             >
               <Button
                 onClick={handleComplete}
                 size="lg"
-                className="px-8 py-3 rounded-full bg-white text-black hover:bg-white/90 shadow-lg relative z-20"
+                className="mobile-interactive px-8 py-3 rounded-full bg-white text-black hover:bg-white/90 shadow-lg relative z-50"
                 disabled={paths.length === 0}
               >
                 Complete
@@ -331,7 +377,7 @@ export function DrawingStage({
                     <TooltipTrigger asChild>
                       <button
                         onClick={() => setSelectedColor(colorOption.color)}
-                        className={`relative w-12 h-12 rounded-xl transition-all duration-200 ${
+                        className={`mobile-interactive relative w-12 h-12 rounded-xl transition-all duration-200 z-50 ${
                           selectedColor === colorOption.color 
                             ? 'ring-2 ring-white/90 shadow-lg scale-105' 
                             : 'ring-1 ring-white/40 hover:ring-white/60 shadow-md hover:scale-105'
@@ -360,51 +406,7 @@ export function DrawingStage({
             </div>
           </motion.div>
 
-          {/* Color Palette Card - Mobile (Bottom) */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 lg:hidden"
-          >
-            <div className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 shadow-lg transition-all duration-500 ${
-              showColorHint ? 'shadow-yellow-300/30 shadow-2xl' : ''
-            }`}>
-              <h3 className="text-white/80 text-center text-sm mb-3">Colors</h3>
-              <div className="flex space-x-2 justify-center">
-                {colorPalette.map((colorOption) => (
-                  <Tooltip key={colorOption.color}>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setSelectedColor(colorOption.color)}
-                        className={`relative w-10 h-10 rounded-lg transition-all duration-200 ${
-                          selectedColor === colorOption.color 
-                            ? 'ring-2 ring-white/90 shadow-lg scale-110' 
-                            : 'ring-1 ring-white/40 hover:ring-white/60 shadow-md hover:scale-105'
-                        }`}
-                        style={{ backgroundColor: colorOption.color }}
-                      >
-                        {/* Simple selection indicator */}
-                        {selectedColor === colorOption.color && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute inset-2 bg-white/30 rounded-sm"
-                          />
-                        )}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-xs">
-                      <div className="space-y-1">
-                        <p className="font-medium">{colorOption.name}</p>
-                        <p className="text-sm text-muted-foreground">{colorOption.meaning}</p>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+
         </div>
 
         {/* Ambient Particles */}

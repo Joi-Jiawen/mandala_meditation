@@ -243,7 +243,7 @@ export default function App() {
   };
 
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden fixed inset-0">
+    <div className="w-screen h-screen h-dvh bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden fixed inset-0">
       {error ? (
         <div className="flex items-center justify-center w-full h-full">
           <div className="text-center space-y-4">

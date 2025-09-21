@@ -343,7 +343,7 @@ export function IntroTutorial({ onComplete }: IntroTutorialProps) {
                   onClick={onComplete}
                   variant="outline"
                   size="sm"
-                  className="bg-white/20 text-white/80 border-white/30 hover:bg-white/30 hover:text-white backdrop-blur-sm px-4 py-2 rounded-full"
+                  className="mobile-interactive bg-white/20 text-white/80 border-white/30 hover:bg-white/30 hover:text-white backdrop-blur-sm px-4 py-2 rounded-full relative z-50"
                 >
                   Skip
                 </Button>
@@ -352,7 +352,7 @@ export function IntroTutorial({ onComplete }: IntroTutorialProps) {
                 <Button
                   onClick={nextScene}
                   size="lg"
-                  className="bg-white/90 text-slate-800 hover:bg-white hover:text-slate-900 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg"
+                  className="mobile-interactive bg-white/90 text-slate-800 hover:bg-white hover:text-slate-900 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg relative z-50"
                 >
                   {currentScene === scenes.length - 1 ? (
                     <>
