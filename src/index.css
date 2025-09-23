@@ -2720,12 +2720,14 @@
 
   .reflection-mandala-container canvas, [data-mandala="true"] canvas {
     contain: none !important;
+    clip-path: circle(50%) !important;
+    border-radius: 50% !important;
     position: relative !important;
     overflow: visible !important;
     mask: none !important;
   }
 
-  .mandala-canvas {
+  .mandala-canvas, canvas[class*="mandala"], canvas.cursor-crosshair {
     clip-path: circle(50%) !important;
     border-radius: 50% !important;
   }

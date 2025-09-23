@@ -425,7 +425,6 @@ export function ReflectionComponent({
                 viewSize={mandalaSize}
                 padding={0}
                 animate={!showCard}
-                showCircular={false}
                 className="transition-all duration-500 overflow-visible reflection-mandala-container mandala-container"
                 data-mandala="true"
                 style={{

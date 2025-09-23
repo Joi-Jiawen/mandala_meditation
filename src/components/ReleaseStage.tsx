@@ -198,7 +198,6 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
                         viewSize={mandalaSize}
                         padding={15}
                         animate={false}
-                        showCircular={false}
                         style={{
                           opacity: mandalaOpacity,
                           width: `${mandalaSize}px`,
@@ -280,7 +279,6 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
                       viewSize={mandalaSize}
                       padding={15}
                       animate={false}
-                      showCircular={false}
                       style={{
                         width: `${mandalaSize}px`,
                         height: `${mandalaSize}px`

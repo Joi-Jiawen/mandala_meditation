@@ -283,17 +283,21 @@
     transform-style: preserve-3d !important;
   }
 
-  /* Additional safety for canvas elements in reflection/release pages */
+  /* Additional safety for canvas elements */
   .reflection-mandala-container canvas,
   [data-mandala="true"] canvas {
     position: relative !important;
     overflow: visible !important;
     contain: none !important;
+    clip-path: circle(50% at 50% 50%) !important;
     mask: none !important;
+    border-radius: 50% !important;
   }
   
-  /* Only force circular canvas for drawing stage (interactive canvas) */
-  .mandala-canvas {
+  /* Force circular canvas for all mandala canvases */
+  .mandala-canvas, 
+  canvas[class*="mandala"],
+  canvas.cursor-crosshair {
     border-radius: 50% !important;
     clip-path: circle(50% at 50% 50%) !important;
   }
