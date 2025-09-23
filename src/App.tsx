@@ -37,25 +37,25 @@ export interface MandalaLayer {
 // Move static data outside component to prevent recreation on every render
 const STAGE_DATA = {
   stage1: {
-    title: "Stage 1: Self-Compassion",
+    title: "Self-Compassion",
     description: "",
     intention: "self-compassion",
     ringIndex: 0
   },
   stage2: {
-    title: "Stage 2: Compassion for a Loved One", 
+    title: "Compassion for Loved Ones", 
     description: "",
     intention: "loved-one",
     ringIndex: 1
   },
   stage4: {
-    title: "Stage 3: Compassion for a Difficult Person",
+    title: "Compassion for Difficult Relationships",
     description: "",
     intention: "difficult-person", 
     ringIndex: 2
   },
   stage5: {
-    title: "Stage 4: Universal Compassion",
+    title: "Universal Compassion",
     description: "",
     intention: "universal",
     ringIndex: 3
@@ -68,29 +68,29 @@ const PREPARATION_DATA = {
     title: "Preparation",
     subtitle: "Beginning Your Journey",
     initialText: "Find a comfortable position. Take a few deep breaths.",
-    prompt: "Recall warm feelings of kindness for yourself – you deserve your own love.",
-    note: "Let these feelings fill your heart as you prepare to create."
+    prompt: "Let's recall warm feeling of kindness for yourself. Feeling this best wishes to start.",
+    note: "Our practice follows a journey that begins with self-compassion and gradually expands to embrace all beings."
   },
   preparation2: {
     title: "Excellent",
     subtitle: "Expanding Your Heart",
-    initialText: "Take a deep breath and feel the kindness you gave yourself.",
-    prompt: "Then bring to mind someone you love dearly. Feel your gratitude and warmth for them.",
-    note: "Hold this person in your heart as you prepare to create for them."
+    initialText: "We've finished our first layer. Take a few deep breaths.",
+    prompt: "Then bring to mind someone you love dearly. Feel your gratitude and warmth toward them.",
+    note: "Hold them in your heart as you prepare to create for them."
   },
   preparation4: {
     title: "Wonderful",
     subtitle: "Transforming Difficulty",
-    initialText: "Take a deep breath and feel the love you shared with your dear one.",
-    prompt: "Then picture someone who has upset you. You are not excusing their actions, but offering goodwill to free your heart from anger.",
-    note: "Breathe deeply and let compassion soften any hardness in your heart."
+    initialText: "Breathe deeply and feel the love shared with your loved ones.",
+    prompt: "Then picture someone who has upset you. Without excusing their actions, try offering them goodwill to free your own heart from anger.",
+    note: "Take deep breaths and allow compassion to soften any resistance in your heart."
   },
   preparation5: {
     title: "Amazing", 
     subtitle: "Universal Embrace",
-    initialText: "Take a deep breath and feel the strength of your growing compassion.",
-    prompt: "Then embrace all living beings in your heart. Imagine your compassion expanding like an endless sky.",
-    note: "Feel your heart become as vast as the universe, holding all beings with love."
+    initialText: "Take a few deep breaths and feel the strength of your growing compassion.",
+    prompt: "Then embrace all living beings in your heart. Imagine your compassion expanding outward like an endless sky.",
+    note: "Feel your heart expand to become as vast as the universe, embracing all beings with love."
   }
 } as const;
 
@@ -152,6 +152,14 @@ export default function App() {
     setJournalEntries(prev => ({ ...prev, [stage]: entry }));
   }, []);
 
+  // Clear all stored data when returning to home
+  const clearAllData = useCallback(() => {
+    setMandalaLayers([]);
+    setJournalEntries({});
+    setCompleteMandalaData(null);
+    console.log('🧹 Cleared all stored mandala and journal data');
+  }, []);
+
   const renderCurrentStage = () => {
     try {
       switch (currentStage) {
@@ -209,14 +217,20 @@ export default function App() {
               mandalaLayers={mandalaLayers}
               completeMandalaData={completeMandalaData}
               onComplete={() => setCurrentStage('river')} 
-              onReturnHome={() => setCurrentStage('home')}
+              onReturnHome={() => {
+                clearAllData();
+                setCurrentStage('home');
+              }}
             />
           );
         
         case 'river':
           return (
             <RiverView 
-              onReturnHome={() => setCurrentStage('home')}
+              onReturnHome={() => {
+                clearAllData();
+                setCurrentStage('home');
+              }}
               journalEntries={journalEntries}
             />
           );
@@ -225,6 +239,8 @@ export default function App() {
           return <GlowTestPage onBack={() => setCurrentStage('home')} />;
         
         default:
+          // Also clear data when falling back to home due to errors
+          clearAllData();
           return <HomeScreen onBeginJourney={nextStage} audioEnabled={audioEnabled} setAudioEnabled={setAudioEnabled} onGlowTest={() => setCurrentStage('glowtest')} />;
       }
     } catch (err) {
@@ -243,7 +259,12 @@ export default function App() {
   };
 
   return (
-    <div className="w-screen h-screen h-dvh bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden fixed inset-0">
+    <div 
+      className="w-screen h-screen h-dvh bg-gradient-to-br from-slate-50 to-blue-50 fixed inset-0"
+      style={{ 
+        overflow: currentStage === 'reflection' ? 'visible' : 'hidden' 
+      }}
+    >
       {error ? (
         <div className="flex items-center justify-center w-full h-full">
           <div className="text-center space-y-4">
@@ -258,8 +279,12 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="w-full h-full"
+            transition={{ 
+              duration: currentStage === 'release' ? 1.2 : 0.3, 
+              ease: "easeInOut" 
+            }}
+            className="w-full h-full overflow-visible"
+            style={{ overflow: currentStage === 'reflection' ? 'visible' : 'hidden' }}
           >
             {renderCurrentStage()}
           </motion.div>

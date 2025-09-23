@@ -60,11 +60,9 @@ export function DrawingStage({
 
   const handleCanvasInteraction = () => {
     if (!selectedColor) {
-      // Show color selection hint (only on desktop)
-      if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-        setShowColorHint(true);
-        setTimeout(() => setShowColorHint(false), 2000);
-      }
+      // Show enhanced color selection glow for all stages
+      setShowColorHint(true);
+      setTimeout(() => setShowColorHint(false), 2000);
       return false;
     }
     return true;
@@ -193,26 +191,53 @@ export function DrawingStage({
           </>
         )}
         
-        {/* Stage 4: Universal Compassion - Amber gradient */}
+        {/* Stage 4: Universal Compassion - Warm terracotta/brown */}
         {stageNumber === 4 && (
           <>
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-orange-900 to-yellow-900">
-              {/* Floating Lotus Petals */}
-              {Array.from({ length: 8 }).map((_, i) => (
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-red-900 to-orange-900">
+              {/* More Universal Floating Particles */}
+              {Array.from({ length: 20 }).map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-3 h-6 bg-white/10 rounded-full"
+                  className="absolute w-1 h-1 bg-white/60 rounded-full"
                   animate={{
-                    y: [-20, -200],
-                    x: [0, Math.sin(i * 0.5) * 100],
-                    rotate: [0, 360],
-                    opacity: [0, 0.7, 0],
+                    y: [-20, -300],
+                    x: [0, Math.sin(i * 0.3) * 150],
+                    opacity: [0, 0.8, 0],
                   }}
                   transition={{
-                    duration: 15,
+                    duration: 12 + Math.random() * 8,
                     repeat: Infinity,
-                    delay: i * 2,
+                    delay: i * 0.5,
                     ease: "easeOut"
+                  }}
+                  style={{
+                    left: `${5 + i * 4.5}%`,
+                    bottom: '-10%',
+                  }}
+                />
+              ))}
+              
+              {/* Larger Stardust Particles */}
+              {Array.from({ length: 12 }).map((_, i) => (
+                <motion.div
+                  key={`star-${i}`}
+                  className="absolute w-2 h-2 bg-white/40 rounded-full"
+                  animate={{
+                    y: [-30, -400],
+                    x: [0, Math.cos(i * 0.7) * 200],
+                    opacity: [0, 1, 0],
+                    scale: [0.5, 1.2, 0.5],
+                  }}
+                  transition={{
+                    duration: 20 + Math.random() * 10,
+                    repeat: Infinity,
+                    delay: i * 1.5,
+                    ease: "easeInOut"
+                  }}
+                  style={{
+                    left: `${10 + i * 6.5}%`,
+                    bottom: '-20%',
                   }}
                 />
               ))}
@@ -245,7 +270,9 @@ export function DrawingStage({
           transition={{ delay: 0.5, duration: 0.5 }}
           className="relative z-10 flex justify-center px-8 mb-2 lg:hidden"
         >
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 shadow-lg">
+          <div className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 shadow-lg transition-all duration-500 ${
+            showColorHint ? 'shadow-yellow-300/40 shadow-2xl ring-2 ring-yellow-300/30' : ''
+          }`}>
             <div className="flex space-x-2 justify-center">
               {colorPalette.map((colorOption) => (
                 <Tooltip key={colorOption.color}>
@@ -309,22 +336,21 @@ export function DrawingStage({
           >
 
             <div className="relative">
-              {/* Color Selection Hint Above Canvas - Hidden on mobile */}
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ 
-                  opacity: showColorHint ? 1 : 0, 
-                  y: showColorHint ? 0 : -10
-                }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute -top-12 left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden lg:block"
-              >
-                <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-4 py-2 rounded-xl shadow-md border border-white/50">
-                  <p className="text-sm whitespace-nowrap">
-                    Please choose a color to begin
-                  </p>
-                </div>
-              </motion.div>
+              {/* Color Selection Hint Above Canvas - Only show in Stage 1 */}
+              {stageNumber === 1 && !selectedColor && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="absolute -top-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none"
+                >
+                  <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-6 py-3 rounded-xl shadow-md border border-white/50 max-w-xs text-center">
+                    <p className="text-sm leading-relaxed">
+                      Each color holds a meaning. Let your heart choose.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
               
               <MandalaCanvas
                 size={typeof window !== 'undefined' ? Math.min(
@@ -368,7 +394,7 @@ export function DrawingStage({
             className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-10 hidden lg:block"
           >
             <div className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 shadow-lg transition-all duration-500 ${
-              showColorHint ? 'shadow-yellow-300/30 shadow-2xl' : ''
+              showColorHint ? 'shadow-yellow-300/50 shadow-2xl ring-2 ring-yellow-300/40' : ''
             }`}>
               <h3 className="text-white/80 text-center text-sm mb-4">Colors</h3>
               <div className="flex flex-col space-y-2">

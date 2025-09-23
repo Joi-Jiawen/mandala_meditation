@@ -34,17 +34,17 @@ export function IntroTutorial({ onComplete }: IntroTutorialProps) {
     {
       title: "Welcome",
       text: "You are about to embark on a journey of compassion and creativity.",
-      narration: "In a quiet valley, wise ones draw mandalas to share love with the world. Today, you will create your own mandala of kindness."
+      narration: "In traditional Buddhist culture, wise ones create mandalas as a way to share love and blessings with the world. Today, you'll create your own mandala of kindness."
     },
     {
       title: "How It Works",
-      text: "You will draw a mandala step by step. Use your finger to draw – every stroke will mirror around a circle, creating a beautiful pattern effortlessly.",
-      narration: "Each stroke you make will be reflected in perfect symmetry, helping focus your mind on balanced patterns."
+      text: "You'll draw your mandala step by step. Use your finger to pour sand, each touch will mirror around the circle, forming a beautiful symmetrical pattern with ease.",
+      narration: "This experience is inspired by traditional mandalas made with colored sand. You'll feel the calm flow of sand as you create. Breathe and enjoy the peaceful process."
     },
     {
       title: "Try It Now",
       text: "Try pouring sand now with your finger. Watch how it creates a beautiful symmetric pattern.",
-      narration: "There is no right or wrong in your drawing – just an expression of kindness."
+      narration: "There is no right or wrong in your drawing. Just an expression of yourself."
     }
   ];
 

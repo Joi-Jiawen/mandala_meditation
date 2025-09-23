@@ -126,9 +126,10 @@ interface CanvasRendererProps {
   padding: number;
   hillSizeMultiplier: number;
   opacity: number;
+  showCircular: boolean;
 }
 
-function CanvasRenderer({ mandalaData, viewSize, padding, hillSizeMultiplier, opacity }: CanvasRendererProps) {
+function CanvasRenderer({ mandalaData, viewSize, padding, hillSizeMultiplier, opacity, showCircular }: CanvasRendererProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // 种子随机数生成器，确保纹理一致性
@@ -242,8 +243,14 @@ function CanvasRenderer({ mandalaData, viewSize, padding, hillSizeMultiplier, op
       ref={canvasRef}
       width={viewSize}
       height={viewSize}
-      className="absolute inset-0"
-      style={{ width: viewSize, height: viewSize }}
+      className="absolute inset-0 overflow-visible"
+      style={{ 
+        width: viewSize, 
+        height: viewSize, 
+        overflow: 'visible',
+        borderRadius: showCircular ? '50%' : '0',
+        clipPath: showCircular ? 'circle(50% at 50% 50%)' : 'none'
+      }}
     />
   );
 }
@@ -256,6 +263,7 @@ interface MandalaRendererProps {
   hillSizeMultiplier?: number;
   animate?: boolean;
   opacity?: number;
+  showCircular?: boolean;
   onHillsReady?: (hills: MandalaData['allHills']) => void;
 }
 
@@ -267,6 +275,7 @@ export function MandalaRenderer({
   hillSizeMultiplier = 1.0,
   animate = false,
   opacity = 0.9,
+  showCircular = true,
   onHillsReady
 }: MandalaRendererProps) {
   const { allHills } = mandalaData;
@@ -290,8 +299,13 @@ export function MandalaRenderer({
 
   return (
     <motion.div 
-      className={`relative mx-auto ${className}`}
-      style={{ width: viewSize, height: viewSize }}
+      className={`relative mx-auto overflow-visible ${className}`}
+      style={{ 
+        width: viewSize, 
+        height: viewSize, 
+        overflow: 'visible',
+        borderRadius: showCircular ? '50%' : '0'
+      }}
       animate={animate ? {
         scale: [1, 1.08, 1, 0.95, 1],
         rotate: [0, 1, 0, -1, 0],
@@ -308,6 +322,7 @@ export function MandalaRenderer({
         padding={padding}
         hillSizeMultiplier={hillSizeMultiplier}
         opacity={opacity}
+        showCircular={showCircular}
       />
     </motion.div>
   );

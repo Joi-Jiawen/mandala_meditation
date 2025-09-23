@@ -554,8 +554,12 @@ export function MandalaCanvas({
           ref={canvasRef}
           width={size}
           height={size}
-          className="rounded-full cursor-crosshair touch-none relative z-10"
-          style={{ backgroundColor: 'transparent' }}
+          className="mandala-canvas cursor-crosshair touch-none relative z-10"
+          style={{ 
+            backgroundColor: 'transparent',
+            borderRadius: '50%',
+            clipPath: 'circle(50% at 50% 50%)'
+          }}
           onMouseDown={startPouring}
           onMouseUp={stopPouring}
           onMouseLeave={stopPouring}

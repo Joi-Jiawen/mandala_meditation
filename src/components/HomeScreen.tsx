@@ -73,7 +73,7 @@ export function HomeScreen({ onBeginJourney, audioEnabled, setAudioEnabled, onGl
           className="space-y-2"
         >
           <h1 className="text-4xl md:text-5xl text-white drop-shadow-lg">
-            Mandala of Compassion
+            Mandala Meditation
           </h1>
           <p className="text-lg text-white/90 drop-shadow-md max-w-md mx-auto">
             A journey of loving-kindness through mindful creation
@@ -98,15 +98,7 @@ export function HomeScreen({ onBeginJourney, audioEnabled, setAudioEnabled, onGl
           </Button>
         </motion.div>
 
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.5 }}
-          className="text-white/80 text-sm max-w-sm mx-auto"
-        >
-          Find peace through the ancient practice of mandala creation
-        </motion.p>
+
       </div>
 
       {/* Settings Icon */}

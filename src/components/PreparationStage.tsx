@@ -37,7 +37,7 @@ export function PreparationStage({
       case "Transforming Difficulty":
         return "from-blue-900 via-teal-900 to-green-900"; // Difficult person - 深蓝绿色调
       case "Universal Embrace":
-        return "from-amber-900 via-orange-900 to-yellow-900"; // Universal
+        return "from-amber-900 via-red-900 to-orange-900"; // Universal - Warm terracotta/brown
       default:
         return "from-indigo-900 via-purple-900 to-blue-900";
     }
@@ -120,29 +120,81 @@ export function PreparationStage({
     <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
       {/* Calming Background */}
       <div className={`absolute inset-0 z-0 bg-gradient-to-br ${getBackgroundGradient()}`}>
-        {/* Floating Lotus Petals */}
-        {Array.from({ length: 8 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-3 h-6 bg-white/10 rounded-full"
-            animate={{
-              y: [-20, -200],
-              x: [0, Math.sin(i * 0.5) * 100],
-              rotate: [0, 360],
-              opacity: [0, 0.7, 0],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              delay: i * 2,
-              ease: "easeOut"
-            }}
-            style={{
-              left: `${10 + i * 10}%`,
-              bottom: '-10%',
-            }}
-          />
-        ))}
+        {/* Floating Lotus Petals or Universal Particles */}
+        {subtitle === "Universal Embrace" ? (
+          <>
+            {/* More Universal Floating Particles */}
+            {Array.from({ length: 20 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-white/60 rounded-full"
+                animate={{
+                  y: [-20, -300],
+                  x: [0, Math.sin(i * 0.3) * 150],
+                  opacity: [0, 0.8, 0],
+                }}
+                transition={{
+                  duration: 12 + Math.random() * 8,
+                  repeat: Infinity,
+                  delay: i * 0.5,
+                  ease: "easeOut"
+                }}
+                style={{
+                  left: `${5 + i * 4.5}%`,
+                  bottom: '-10%',
+                }}
+              />
+            ))}
+            
+            {/* Larger Stardust Particles */}
+            {Array.from({ length: 12 }).map((_, i) => (
+              <motion.div
+                key={`star-${i}`}
+                className="absolute w-2 h-2 bg-white/40 rounded-full"
+                animate={{
+                  y: [-30, -400],
+                  x: [0, Math.cos(i * 0.7) * 200],
+                  opacity: [0, 1, 0],
+                  scale: [0.5, 1.2, 0.5],
+                }}
+                transition={{
+                  duration: 20 + Math.random() * 10,
+                  repeat: Infinity,
+                  delay: i * 1.5,
+                  ease: "easeInOut"
+                }}
+                style={{
+                  left: `${10 + i * 6.5}%`,
+                  bottom: '-20%',
+                }}
+              />
+            ))}
+          </>
+        ) : (
+          /* Regular Floating Lotus Petals for other stages */
+          Array.from({ length: 8 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-3 h-6 bg-white/10 rounded-full"
+              animate={{
+                y: [-20, -200],
+                x: [0, Math.sin(i * 0.5) * 100],
+                rotate: [0, 360],
+                opacity: [0, 0.7, 0],
+              }}
+              transition={{
+                duration: 15,
+                repeat: Infinity,
+                delay: i * 2,
+                ease: "easeOut"
+              }}
+              style={{
+                left: `${10 + i * 10}%`,
+                bottom: '-10%',
+              }}
+            />
+          ))
+        )}
       </div>
 
       {/* Content */}
@@ -288,7 +340,7 @@ export function PreparationStage({
             >
               {subtitle === "Beginning Your Journey" 
                 ? "Begin Creating with Love"
-                : "Continue with Compassion"
+                : "I'm Ready"
               }
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>

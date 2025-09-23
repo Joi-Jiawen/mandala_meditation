@@ -248,6 +248,55 @@
       padding-bottom: max(8px, env(safe-area-inset-bottom));
     }
   }
+
+  /* Mandala overflow support - ensure mandalas can render beyond container bounds */
+  .mandala-container, .mandala-container *, 
+  [data-mandala="true"], [data-mandala="true"] *,
+  .overflow-visible, .overflow-visible * {
+    overflow: visible !important;
+  }
+
+  /* Specific support for reflection page mandala rendering */
+  .reflection-mandala-container {
+    overflow: visible !important;
+    contain: none !important;
+    clip-path: none !important;
+    mask: none !important;
+  }
+
+  .reflection-mandala-container canvas {
+    overflow: visible !important;
+    contain: none !important;
+    clip-path: none !important;
+    mask: none !important;
+  }
+
+  /* Force overflow visible on reflection stage */
+  [data-mandala="true"], 
+  [data-mandala="true"] *,
+  .mandala-container *,
+  .reflection-mandala-container * {
+    overflow: visible !important;
+    contain: none !important;
+    clip-path: none !important;
+    mask: none !important;
+    transform-style: preserve-3d !important;
+  }
+
+  /* Additional safety for canvas elements in reflection/release pages */
+  .reflection-mandala-container canvas,
+  [data-mandala="true"] canvas {
+    position: relative !important;
+    overflow: visible !important;
+    contain: none !important;
+    mask: none !important;
+  }
+  
+  /* Only force circular canvas for drawing stage (interactive canvas) */
+  .mandala-canvas {
+    border-radius: 50% !important;
+    clip-path: circle(50% at 50% 50%) !important;
+  }
 }
 
 /* Enhanced Mandala Breathing Light System */

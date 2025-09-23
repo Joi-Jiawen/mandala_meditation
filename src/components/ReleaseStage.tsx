@@ -4,7 +4,7 @@ import { Waves, Download, Star, Home } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import type { MandalaLayer } from '../App';
-import { parseMandalaData, downloadMandala, calculateRenderParams, type MandalaData } from './shared/MandalaRenderer';
+import { MandalaRenderer, parseMandalaData, downloadMandala, type MandalaData } from './shared/MandalaRenderer';
 import imgImage61 from "figma:asset/73a48179bd1fa9cc566cb1c91f3a9199dc51f8ff.png";
 
 interface ReleaseStageProps {
@@ -40,6 +40,10 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
     return parseMandalaData(mandalaLayers);
   }, [completeMandalaData, mandalaLayers]);
 
+  // Responsive mandala size
+  const mandalaSize = typeof window !== 'undefined' ? 
+    Math.min(500, window.innerWidth * 0.6, window.innerHeight * 0.4) : 400;
+
   useEffect(() => {
     if (!isReleasing) return;
 
@@ -47,18 +51,13 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
     
     // Calculate screen positions for all hills
     if (allHills.length > 0) {
-      const renderParams = calculateRenderParams(mandalaData.bounds, 350, 40);
-      const { scale, dataCenterX, dataCenterY, viewCenterX, viewCenterY } = renderParams;
-
       // Calculate screen positions relative to the component
-      const componentRect = { x: window.innerWidth / 2 - 175, y: window.innerHeight / 2 - 175 };
+      const componentRect = { x: window.innerWidth / 2 - mandalaSize/2, y: window.innerHeight / 2 - mandalaSize/2 };
       
       allHills.forEach((hill: any) => {
-        const screenX = viewCenterX + (hill.x - dataCenterX) * scale;
-        const screenY = viewCenterY + (hill.y - dataCenterY) * scale;
         hill.screenPosition = {
-          x: componentRect.x + screenX,
-          y: componentRect.y + screenY
+          x: componentRect.x + Math.random() * mandalaSize,
+          y: componentRect.y + Math.random() * mandalaSize
         };
       });
     }
@@ -113,7 +112,7 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
       clearInterval(interval);
       clearTimeout(completeTimer);
     };
-  }, [isReleasing, mandalaData]);
+  }, [isReleasing, mandalaData, mandalaSize]);
 
   const handleRelease = () => {
     setIsReleasing(true);
@@ -132,101 +131,6 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
     }
   };
 
-  const renderMandala = () => {
-    if (mandalaData.allHills.length === 0) {
-      return (
-        <div className="w-80 h-80 relative mx-auto flex items-center justify-center border-2 border-dashed border-white/30 rounded-full">
-          <p className="text-white/60">No mandala to release</p>
-        </div>
-      );
-    }
-    
-    return (
-      <motion.div 
-        className="w-80 h-80 relative mx-auto"
-        style={{ opacity: mandalaOpacity }}
-        animate={isReleasing ? {
-          scale: [1, 1.1, 0.8],
-          rotate: [0, 5, -5, 0]
-        } : {}}
-        transition={isReleasing ? 
-          { duration: 2, ease: "easeInOut" } : 
-          {}
-        }
-      >
-        {/* Golden Glow Background - only when not releasing */}
-        {!isReleasing && (
-          <motion.div
-            className="absolute inset-0 bg-gradient-radial from-yellow-400/30 via-amber-300/20 to-transparent rounded-full"
-            animate={{
-              opacity: [0.4, 0.8, 0.4],
-              scale: [0.95, 1.05, 0.95],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        )}
-        
-        <svg width="350" height="350" className="absolute inset-0" viewBox="0 0 350 350">
-          {mandalaData.allHills.map((hill, index) => {
-            const renderParams = calculateRenderParams(mandalaData.bounds, 350, 40);
-            const { scale, dataCenterX, dataCenterY, viewCenterX, viewCenterY } = renderParams;
-            
-            const screenX = viewCenterX + (hill.x - dataCenterX) * scale;
-            const screenY = viewCenterY + (hill.y - dataCenterY) * scale;
-            const screenSize = Math.max(2, (hill.size || 5) * scale * 0.9);
-            
-            return isReleasing ? (
-              <motion.circle
-                key={index}
-                cx={screenX}
-                cy={screenY}
-                r={screenSize}
-                fill={hill.color || hill.layerColor || '#3b82f6'}
-                animate={{
-                  r: [screenSize, screenSize * 0.5, 0],
-                  opacity: [0.9, 0.5, 0],
-                }}
-                transition={{ 
-                  duration: 1.5,
-                  delay: Math.random() * 1,
-                  ease: "easeOut"
-                }}
-              />
-            ) : (
-              <circle
-                key={index}
-                cx={screenX}
-                cy={screenY}
-                r={screenSize}
-                fill={hill.color || hill.layerColor || '#3b82f6'}
-                opacity={0.9}
-              />
-            );
-          })}
-        </svg>
-        
-        {/* Release glow effects */}
-        {isReleasing && (
-          <motion.div
-            className="absolute inset-0 bg-gradient-radial from-blue-200/20 via-purple-100/10 to-transparent rounded-full"
-            animate={{
-              opacity: [0.4, 0.8, 0],
-              scale: [0.9, 1.2, 1.5],
-            }}
-            transition={{
-              duration: 3,
-              ease: "easeInOut"
-            }}
-          />
-        )}
-      </motion.div>
-    );
-  };
-
   return (
     <div className="relative w-full h-full overflow-hidden">
       {/* Lake Sunset Background */}
@@ -239,7 +143,7 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-6">
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-6 py-8">
         <AnimatePresence mode="wait">
           {!isReleasing ? (
             <motion.div
@@ -247,61 +151,96 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.8 }}
-              className="text-center space-y-8 max-w-2xl"
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="text-center space-y-8 max-w-4xl w-full"
             >
               {/* Title */}
-              <h2 className="text-3xl text-white drop-shadow-lg">
-                Release the Mandala
-              </h2>
-              
-              {/* Mandala using unified renderer */}
-              <div className="flex justify-center">
-                {renderMandala()}
-              </div>
-              
-              {/* Download Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
+              <motion.h2 
+                className="text-3xl md:text-4xl text-white drop-shadow-lg"
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mb-6"
+                transition={{ delay: 0.2 }}
               >
-                <Button
-                  onClick={handleDownload}
-                  variant="outline"
-                  size="sm"
-                  className="bg-white/20 text-white/80 border-white/30 hover:bg-white/30 hover:text-white backdrop-blur-sm"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download Mandala
-                </Button>
-              </motion.div>
-
-              {/* Instruction Text */}
+                Release the Mandala
+              </motion.h2>
+              
+              {/* Instruction Text - Moved under title */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="text-base text-white/90 drop-shadow-md leading-relaxed mb-8"
+                transition={{ delay: 0.4 }}
+                className="text-lg text-white/90 drop-shadow-md leading-relaxed max-w-2xl mx-auto"
               >
                 When you are ready, let the mandala go. Release it to the river, trusting that 
                 the love you've put into it will flow to all beings.
               </motion.p>
 
-              {/* Release Button */}
+              {/* Mandala with Frame */}
+              <motion.div 
+                className="flex justify-center"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+              >
+                <div className="relative">
+                  {/* Simple Frame */}
+                  <div 
+                    className="relative bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-3xl p-3 shadow-2xl"
+                    style={{
+                      width: mandalaSize + 24,
+                      height: mandalaSize + 24
+                    }}
+                  >
+                    {/* Mandala using unified renderer without breathing light */}
+                    <div className="relative">
+                      <MandalaRenderer
+                        mandalaData={mandalaData}
+                        viewSize={mandalaSize}
+                        padding={15}
+                        animate={false}
+                        showCircular={false}
+                        style={{
+                          opacity: mandalaOpacity,
+                          width: `${mandalaSize}px`,
+                          height: `${mandalaSize}px`
+                        }}
+                      />
+                    </div>
+                    
+                    {/* Download Button - Bottom Right Corner - Icon Only */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8 }}
+                      className="absolute bottom-2 right-2"
+                    >
+                      <Button
+                        onClick={handleDownload}
+                        variant="outline"
+                        size="sm"
+                        className="bg-white/20 text-white/90 border-white/40 hover:bg-white/30 hover:text-white backdrop-blur-sm rounded-full p-2 shadow-lg"
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Release Button - Primary Style */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
+                transition={{ delay: 1 }}
+                className="pt-4"
               >
                 <Button
                   onClick={handleRelease}
                   size="lg"
-                  className="px-8 py-4 rounded-full shadow-lg bg-amber-600 hover:bg-amber-700 text-white"
+                  className="mobile-interactive px-12 py-4 rounded-full shadow-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
                 >
-                  <Waves className="w-5 h-5 mr-2" />
-                  Release to the River
+                  <Waves className="w-5 h-5 mr-3" />
+                  Let it go
                 </Button>
               </motion.div>
             </motion.div>
@@ -314,7 +253,7 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
             >
               {/* Instruction above mandala */}
               <motion.p
-                className="text-lg text-white/90 drop-shadow-md max-w-lg mx-auto"
+                className="text-xl text-white/90 drop-shadow-md max-w-2xl mx-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -322,56 +261,101 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
                 Everything changes, and that's okay. By letting go, we make room in our heart for new compassion.
               </motion.p>
 
-              {/* Mandala dissolution */}
-              {renderMandala()}
+              {/* Mandala dissolution WITHOUT frame during letting go */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <motion.div
+                    style={{ opacity: mandalaOpacity }}
+                    animate={isReleasing ? {
+                      scale: [1, 1.1, 0.8],
+                      rotate: [0, 5, -5, 0]
+                    } : {}}
+                    transition={isReleasing ? 
+                      { duration: 2, ease: "easeInOut" } : 
+                      {}
+                    }
+                  >
+                    <MandalaRenderer
+                      mandalaData={mandalaData}
+                      viewSize={mandalaSize}
+                      padding={15}
+                      animate={false}
+                      showCircular={false}
+                      style={{
+                        width: `${mandalaSize}px`,
+                        height: `${mandalaSize}px`
+                      }}
+                    />
+                  </motion.div>
+                  
+                  {/* Release glow effects */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-radial from-blue-200/20 via-purple-100/10 to-transparent rounded-full"
+                    animate={{
+                      opacity: [0.4, 0.8, 0],
+                      scale: [0.9, 1.2, 1.5],
+                    }}
+                    transition={{
+                      duration: 3,
+                      ease: "easeInOut"
+                    }}
+                  />
+                </div>
+              </div>
             </motion.div>
           ) : null}
         </AnimatePresence>
       </div>
 
-      {/* Completion Card - "Mandala of Compassion" from RiverView */}
+      {/* Enhanced Completion Card */}
       <AnimatePresence>
         {showCompletionCard && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 1, type: "spring", bounce: 0.2 }}
+            transition={{ duration: 1.2, type: "spring", bounce: 0.2 }}
             className="absolute inset-0 z-20 flex items-center justify-center p-6"
           >
-            <Card className="p-10 bg-white/95 backdrop-blur-sm border-white/50 shadow-2xl max-w-lg w-full mx-4">
-              <div className="text-center space-y-6">
-                <div className="mx-auto w-24 h-24 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Star className="w-12 h-12 text-white" />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-2xl">Mandala of Compassion</h3>
-                  <p className="text-lg text-muted-foreground">
-                    Journey Complete
-                  </p>
-                </div>
-                <p className="text-base text-muted-foreground leading-relaxed">
-                  "Well done. As the river carries away the mandala, it carries your kindness to the vast world. Take a moment to rest in this feeling of peace and connection."
+            <div className="bg-white/70 backdrop-blur-md border border-white/40 rounded-3xl p-10 text-center space-y-8 shadow-2xl max-w-2xl w-full mx-4 sm:mx-8">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="space-y-4"
+              >
+                <h3 className="text-3xl text-foreground">Mandala of Compassion</h3>
+                <p className="text-xl text-muted-foreground">
+                  Journey Complete
                 </p>
-                
-                {/* Continue Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1, duration: 0.8 }}
-                  className="pt-4"
+              </motion.div>
+              
+              <motion.p 
+                className="text-lg text-muted-foreground leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                "Well done. As the river carries away the mandala, it carries your kindness to the vast world. Take a moment to rest in this feeling of peace and connection."
+              </motion.p>
+              
+              {/* Continue Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.8 }}
+                className="pt-4"
+              >
+                <Button
+                  onClick={handleCardContinue}
+                  size="lg"
+                  className="mobile-interactive bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-4 rounded-full shadow-xl transition-all duration-300"
                 >
-                  <Button
-                    onClick={handleCardContinue}
-                    size="lg"
-                    className="bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white px-8 py-3 rounded-full shadow-lg"
-                  >
-                    <Home className="w-5 h-5 mr-2" />
-                    Return Home
-                  </Button>
-                </motion.div>
-              </div>
-            </Card>
+                  <Home className="w-5 h-5 mr-3" />
+                  Return Home
+                </Button>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -397,7 +381,7 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
         ))}
       </div>
 
-      {/* Water Wave Dots - 复制自RiverView */}
+      {/* Water Wave Dots */}
       <div className="absolute inset-0 z-5 pointer-events-none">
         {/* Small moving particles */}
         {Array.from({ length: 8 }).map((_, i) => (
