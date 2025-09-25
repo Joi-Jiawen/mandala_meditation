@@ -7,7 +7,7 @@ import { DrawingStage } from './components/DrawingStage';
 import { ReflectionComponent } from './components/ReflectionComponent';
 import { ReleaseStage } from './components/ReleaseStage';
 import { RiverView } from './components/RiverView';
-import { GlowTestPage } from './components/GlowTestPage';
+
 import { parseMandalaData, type MandalaData } from './components/shared/MandalaRenderer';
 
 export type AppStage = 
@@ -23,8 +23,7 @@ export type AppStage =
   | 'stage5'
   | 'reflection'
   | 'release'
-  | 'river'
-  | 'glowtest';
+  | 'river';
 
 export interface MandalaLayer {
   id: string;
@@ -164,10 +163,10 @@ export default function App() {
     try {
       switch (currentStage) {
         case 'home':
-          return <HomeScreen onBeginJourney={nextStage} audioEnabled={audioEnabled} setAudioEnabled={setAudioEnabled} onGlowTest={() => setCurrentStage('glowtest')} />;
+          return <HomeScreen onBeginJourney={nextStage} audioEnabled={audioEnabled} setAudioEnabled={setAudioEnabled} />;
         
         case 'intro':
-          return <IntroTutorial onComplete={nextStage} />;
+          return <IntroTutorial onComplete={nextStage} audioEnabled={audioEnabled} setAudioEnabled={setAudioEnabled} />;
         
         case 'preparation':
         case 'preparation2':
@@ -178,7 +177,7 @@ export default function App() {
           if (!prepData) {
             throw new Error(`Invalid preparation stage: ${currentStage}`);
           }
-          return <PreparationStage {...prepData} onComplete={nextStage} />;
+          return <PreparationStage {...prepData} onComplete={nextStage} audioEnabled={audioEnabled} setAudioEnabled={setAudioEnabled} />;
         
         case 'stage1':
         case 'stage2':
@@ -197,6 +196,8 @@ export default function App() {
                 addMandalaLayer(layer);
                 nextStage();
               }}
+              audioEnabled={audioEnabled}
+              setAudioEnabled={setAudioEnabled}
             />
           );
         
@@ -221,6 +222,8 @@ export default function App() {
                 clearAllData();
                 setCurrentStage('home');
               }}
+              audioEnabled={audioEnabled}
+              setAudioEnabled={setAudioEnabled}
             />
           );
         
@@ -232,16 +235,17 @@ export default function App() {
                 setCurrentStage('home');
               }}
               journalEntries={journalEntries}
+              audioEnabled={audioEnabled}
+              setAudioEnabled={setAudioEnabled}
             />
           );
         
-        case 'glowtest':
-          return <GlowTestPage onBack={() => setCurrentStage('home')} />;
+
         
         default:
           // Also clear data when falling back to home due to errors
           clearAllData();
-          return <HomeScreen onBeginJourney={nextStage} audioEnabled={audioEnabled} setAudioEnabled={setAudioEnabled} onGlowTest={() => setCurrentStage('glowtest')} />;
+          return <HomeScreen onBeginJourney={nextStage} audioEnabled={audioEnabled} setAudioEnabled={setAudioEnabled} />;
       }
     } catch (err) {
       console.error('Error rendering stage:', err);

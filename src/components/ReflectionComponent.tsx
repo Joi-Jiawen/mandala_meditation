@@ -59,13 +59,32 @@ export function ReflectionComponent({
     }
   }, []);
 
-  // Calculate responsive mandala size - 完全自由的大尺寸，确保能完整显示
+  // Calculate responsive mandala size - 优化曼陀罗完整显示
   const mandalaSize = useMemo(() => {
-    // 给mandala最大可能的空间
     const availableWidth = windowSize.width;
     const availableHeight = windowSize.height;
-    // 使用较大的基础尺寸，不再过度限制
-    return Math.min(availableWidth * 0.85, availableHeight * 0.7, 800);
+    
+    // 手机端和桌面端分别处理
+    if (availableWidth < 768) { // 手机端
+      // 手机端：顶部144px（增加间隙） + 底部60px（呼吸计数器） = 204px
+      const reservedVerticalSpace = 204;
+      const availableVerticalSpace = availableHeight - reservedVerticalSpace;
+      // 放大手机端曼陀罗尺寸
+      return Math.min(
+        availableWidth * 0.85,  // 从80%增加到85%
+        availableVerticalSpace * 0.85, // 从80%增加到85%
+        400 // 从350px增加到400px
+      );
+    } else { // 桌面端
+      // 桌面端：顶部160px + 底部80px = 240px
+      const reservedVerticalSpace = 240;
+      const availableVerticalSpace = availableHeight - reservedVerticalSpace;
+      return Math.min(
+        availableWidth * 0.75,  // 从70%增加到75%
+        availableVerticalSpace * 0.8, // 从75%增加到80%
+        600 // 从550px增加到600px
+      );
+    }
   }, [windowSize]);
 
   useEffect(() => {
@@ -111,7 +130,7 @@ export function ReflectionComponent({
   };
 
   return (
-    <div className="relative w-full h-full overflow-visible">
+    <div className="relative w-full h-full overflow-visible reflection-page-mobile">
       {/* Figma Sky Background */}
       <div 
         className="absolute inset-0 bg-center bg-cover bg-no-repeat"
@@ -120,6 +139,7 @@ export function ReflectionComponent({
       
       {/* Black Overlay for Readability */}
       <div className="absolute inset-0 bg-black/30" />
+
       
       {/* Enhanced Ambient Particles */}
       {Array.from({ length: 12 }).map((_, i) => (
@@ -218,91 +238,65 @@ export function ReflectionComponent({
         />
       ))}
 
-      {/* Fixed Layout Container - mandala position never changes */}
-      <div className="relative z-10 w-full h-full overflow-visible">
+      {/* Fixed Layout Container - 重新设计为更舒适的垂直布局 */}
+      <div className="relative z-10 w-full h-full overflow-visible flex flex-col">
         
-        {/* Title - Fixed at top */}
-        <AnimatePresence>
-          {showTitle && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.8 }}
-              className="absolute top-12 w-full flex justify-center z-30"
-            >
-              <h2 className="text-3xl text-white text-center">
-                Reflection Time
-              </h2>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Text content - Fixed position below title */}
-        <div className="absolute top-24 w-full flex flex-col items-center px-6 z-30">
-          <AnimatePresence mode="wait">
-            {showFirstText && !showSecondText && (
+        {/* Top section - Title and text - 响应式高度优化 */}
+        <div className="flex-shrink-0 pt-8 md:pt-8 pb-4 md:pb-4 px-6 h-36 md:h-40 flex flex-col justify-center">
+          {/* Title */}
+          <AnimatePresence>
+            {showTitle && (
               <motion.div
-                key="first-text"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.8 }}
-                className="text-center max-w-4xl"
+                className="w-full flex justify-center z-30 mb-4"
               >
-                <p className="text-base md:text-lg text-white/90 leading-relaxed">
-                  Wonderful! Your mandala is now complete
-                </p>
-              </motion.div>
-            )}
-            
-            {showSecondText && (
-              <motion.div
-                key="second-text"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-center max-w-4xl"
-              >
-                <p className="text-base md:text-lg text-white/90 leading-relaxed">
-                  Let's focus and take some deep breaths to experience this open, unconditional compassion.
-                </p>
+                <h2 className="text-2xl md:text-3xl text-white text-center">
+                  5 Breaths of Reflection
+                </h2>
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Text content */}
+          <div className="w-full flex flex-col items-center z-30">
+            <AnimatePresence mode="wait">
+              {showFirstText && !showSecondText && (
+                <motion.div
+                  key="first-text"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.8 }}
+                  className="text-center max-w-4xl"
+                >
+                  <p className="text-base md:text-lg text-white/90 leading-relaxed">
+                    Wonderful! Your mandala is now complete
+                  </p>
+                </motion.div>
+              )}
+              
+              {showSecondText && (
+                <motion.div
+                  key="second-text"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="text-center max-w-4xl"
+                >
+                  <p className="text-base md:text-lg text-white/90 leading-relaxed">
+                    Let's focus and take some deep breaths to experience this open, unconditional compassion.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Breathing cycle indicator - Fixed position */}
-        <AnimatePresence>
-          {showBreathingCounter && !showCard && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className="absolute top-40 w-full flex justify-center z-30"
-            >
-              <div className="text-center">
-                <div className="flex items-center justify-center space-x-3 mb-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                        i < breathingCycle ? 'bg-white/80 scale-125' : 'bg-white/30'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-white/50">
-                  {breathingCycle < 5 ? `Breath ${breathingCycle + 1} of 5` : 'Complete'}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Mandala Container - 完全简化的flexbox居中布局 */}
-        <div className="absolute inset-0 flex items-center justify-center z-20 overflow-visible reflection-mandala-container">
+        {/* Center section - Mandala */}
+        <div className="flex-grow flex flex-col items-center justify-center z-20 overflow-visible reflection-mandala-container min-h-0 relative px-4 md:px-0">
           <motion.div
             initial={{ opacity: 0, scale: 1 }}
             animate={{ 
@@ -405,7 +399,7 @@ export function ReflectionComponent({
             {/* Mandala with breathing scaling animation - ON TOP */}
             <motion.div
               animate={!showCard ? {
-                scale: [1, 1.05, 1]
+                scale: [1.1, 1.15, 1.1] // 整体放大10-15%
               } : {}}
               transition={{
                 duration: 8,
@@ -417,13 +411,15 @@ export function ReflectionComponent({
               style={{
                 width: `${mandalaSize}px`,
                 height: `${mandalaSize}px`,
-                overflow: 'visible'
+                overflow: 'visible',
+                transform: 'scale(1.1)' // 基础放大10%
               }}
             >
               <MandalaRenderer
                 mandalaData={mandalaData}
                 viewSize={mandalaSize}
-                padding={0}
+                padding={mandalaSize * 0.1}
+                hillSizeMultiplier={1.15}
                 animate={!showCard}
                 className="transition-all duration-500 overflow-visible reflection-mandala-container mandala-container"
                 data-mandala="true"
@@ -435,7 +431,39 @@ export function ReflectionComponent({
               />
             </motion.div>
           </motion.div>
+
+          {/* Breathing counter - 响应式定位优化 */}
+          <AnimatePresence>
+            {showBreathingCounter && !showCard && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 z-30"
+              >
+                <div className="text-center">
+                  <div className="flex items-center justify-center space-x-3 mb-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                          i < breathingCycle ? 'bg-white/80 scale-125' : 'bg-white/30'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-xs text-white/50">
+                    {breathingCycle < 5 ? `Breath ${breathingCycle + 1} of 5` : 'Complete'}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
+
+        {/* Bottom section - 响应式预留空间 */}
+        <div className="flex-shrink-0 h-12 md:h-20"></div>
       </div>
 
       {/* Completion Card - More transparent white background */}
@@ -497,26 +525,7 @@ export function ReflectionComponent({
         )}
       </AnimatePresence>
 
-      {/* Subtle Audio Visualization */}
-      <motion.div
-        className="absolute bottom-6 left-6 z-10 flex space-x-1"
-        animate={{ opacity: [0.3, 0.7, 0.3] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      >
-        {Array.from({ length: 4 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="w-1 bg-white/40 rounded-full"
-            animate={{ height: [6, 12, 6] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              delay: i * 0.2,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-      </motion.div>
+
     </div>
   );
 }

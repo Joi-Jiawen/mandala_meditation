@@ -1,17 +1,17 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Play, Settings, Volume2, VolumeX } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { AudioToggle } from './AudioToggle';
 
 interface HomeScreenProps {
   onBeginJourney: () => void;
   audioEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;
-  onGlowTest?: () => void;
 }
 
-export function HomeScreen({ onBeginJourney, audioEnabled, setAudioEnabled, onGlowTest }: HomeScreenProps) {
+export function HomeScreen({ onBeginJourney, audioEnabled, setAudioEnabled }: HomeScreenProps) {
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
       {/* Animated Background */}
@@ -101,31 +101,11 @@ export function HomeScreen({ onBeginJourney, audioEnabled, setAudioEnabled, onGl
 
       </div>
 
-      {/* Settings Icon */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2 }}
-        className="absolute top-6 right-6 z-30 flex items-center space-x-3"
-      >
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setAudioEnabled(!audioEnabled)}
-          className="text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-sm rounded-full"
-        >
-          {audioEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onGlowTest}
-          className="text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-sm rounded-full"
-          title="查看光圈大小"
-        >
-          <Settings className="w-5 h-5" />
-        </Button>
-      </motion.div>
+      {/* Audio Toggle */}
+      <AudioToggle 
+        audioEnabled={audioEnabled}
+        setAudioEnabled={setAudioEnabled}
+      />
 
       {/* Gentle Breathing Indicator */}
       <motion.div

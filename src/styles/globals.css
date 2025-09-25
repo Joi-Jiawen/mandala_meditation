@@ -289,9 +289,35 @@
     position: relative !important;
     overflow: visible !important;
     contain: none !important;
-    clip-path: circle(50% at 50% 50%) !important;
+    clip-path: circle(48% at 50% 50%) !important;
     mask: none !important;
     border-radius: 50% !important;
+  }
+
+  /* Mobile-specific mandala positioning and sizing */
+  @media (max-width: 767px) {
+    .reflection-mandala-container {
+      width: 100% !important;
+      max-width: 400px !important; /* 从350px增加到400px */
+      height: auto !important;
+      margin: 0 auto !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 12px !important; /* 从16px减少到12px，减少边距 */
+    }
+
+    .reflection-mandala-container canvas {
+      max-width: calc(100% - 24px) !important; /* 从32px减少到24px */
+      max-height: calc(100% - 24px) !important;
+      width: auto !important;
+      height: auto !important;
+    }
+    
+    /* 确保手机端顶部有足够安全区域 */
+    .reflection-page-mobile {
+      padding-top: max(32px, env(safe-area-inset-top)) !important;
+    }
   }
   
   /* Force circular canvas for all mandala canvases */

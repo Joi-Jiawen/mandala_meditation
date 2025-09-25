@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Waves, Download, Star, Home } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { AudioToggle } from './AudioToggle';
 import type { MandalaLayer } from '../App';
 import { MandalaRenderer, parseMandalaData, downloadMandala, type MandalaData } from './shared/MandalaRenderer';
 import imgImage61 from "figma:asset/73a48179bd1fa9cc566cb1c91f3a9199dc51f8ff.png";
@@ -12,6 +13,8 @@ interface ReleaseStageProps {
   completeMandalaData?: MandalaData | null;
   onComplete: () => void;
   onReturnHome?: () => void;
+  audioEnabled: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
 }
 
 interface Particle {
@@ -24,7 +27,7 @@ interface Particle {
   life: number;
 }
 
-export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, onReturnHome }: ReleaseStageProps) {
+export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, onReturnHome, audioEnabled, setAudioEnabled }: ReleaseStageProps) {
   const [isReleasing, setIsReleasing] = useState(false);
   const [showCompletionCard, setShowCompletionCard] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -133,6 +136,12 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
 
   return (
     <div className="relative w-full h-full overflow-hidden">
+      {/* Audio Toggle */}
+      <AudioToggle 
+        audioEnabled={audioEnabled}
+        setAudioEnabled={setAudioEnabled}
+      />
+
       {/* Lake Sunset Background */}
       <div className="absolute inset-0 z-0">
         <div 
@@ -196,7 +205,7 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
                       <MandalaRenderer
                         mandalaData={mandalaData}
                         viewSize={mandalaSize}
-                        padding={15}
+                        padding={mandalaSize * 0.1}
                         animate={false}
                         style={{
                           opacity: mandalaOpacity,
@@ -277,7 +286,7 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
                     <MandalaRenderer
                       mandalaData={mandalaData}
                       viewSize={mandalaSize}
-                      padding={15}
+                      padding={mandalaSize * 0.1}
                       animate={false}
                       style={{
                         width: `${mandalaSize}px`,
@@ -449,28 +458,7 @@ export function ReleaseStage({ mandalaLayers, completeMandalaData, onComplete, o
         />
       ))}
 
-      {/* Sound Visualization */}
-      <motion.div
-        className="absolute top-8 right-8 z-10 flex space-x-1"
-        animate={{ opacity: isReleasing ? [0.5, 1, 0.5] : 0.3 }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        {Array.from({ length: 5 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="w-1 bg-blue-400 rounded-full"
-            animate={{ 
-              height: isReleasing ? [8, 20, 8] : [8, 12, 8]
-            }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              delay: i * 0.1,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-      </motion.div>
+
     </div>
   );
 }

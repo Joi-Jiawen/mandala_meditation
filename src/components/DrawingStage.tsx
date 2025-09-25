@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { MandalaCanvas } from './MandalaCanvas';
+import { AudioToggle } from './AudioToggle';
 import type { MandalaLayer } from '../App';
 import imgImage23 from "figma:asset/05d06e7e1d508e78ecdb2f2deeeba5d09cd87bb2.png";
 import imgImage28 from "figma:asset/ac79442a1654f7a786d5de872e343e40b8bbe463.png";
@@ -18,6 +19,8 @@ interface DrawingStageProps {
   ringIndex: number;
   mandalaLayers: MandalaLayer[];
   onComplete: (layer: MandalaLayer) => void;
+  audioEnabled: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
 }
 
 const colorPalette = [
@@ -38,12 +41,15 @@ export function DrawingStage({
   intention, 
   ringIndex, 
   mandalaLayers,
-  onComplete 
+  onComplete,
+  audioEnabled,
+  setAudioEnabled 
 }: DrawingStageProps) {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedTool, setSelectedTool] = useState('brush');
   const [paths, setPaths] = useState<string[]>([]);
   const [showColorHint, setShowColorHint] = useState(false);
+  const [mobileTooltipOpen, setMobileTooltipOpen] = useState<string | null>(null);
 
   const stageNumber = ringIndex + 1;
 
@@ -59,6 +65,9 @@ export function DrawingStage({
   };
 
   const handleCanvasInteraction = () => {
+    // 关闭手机端tooltip（不影响已选择的颜色）
+    setMobileTooltipOpen(null);
+    
     if (!selectedColor) {
       // Show enhanced color selection glow for all stages
       setShowColorHint(true);
@@ -93,6 +102,17 @@ export function DrawingStage({
   return (
     <TooltipProvider>
       <div className={`relative h-screen w-full overflow-hidden ${[1, 2, 3, 4].includes(stageNumber) ? 'bg-white' : `bg-gradient-to-br ${getBackgroundGradient()}`}`}>
+        {/* Audio Toggle */}
+        <AudioToggle 
+          audioEnabled={audioEnabled}
+          setAudioEnabled={setAudioEnabled}
+        />
+        
+        {/* Audio Toggle */}
+        <AudioToggle 
+          audioEnabled={audioEnabled}
+          setAudioEnabled={setAudioEnabled}
+        />
         {/* Stage Backgrounds - Matching PreparationStage */}
         
         {/* Stage 1: Self-Compassion - 淡黄蓝色调，深邃 */}
@@ -247,10 +267,10 @@ export function DrawingStage({
         )}
 
         {/* Top Bar with Stage Info - Centered */}
-        <div className="relative z-10 flex justify-center items-start p-8 pb-2 lg:pb-4">
-          <div className="flex flex-col items-center">
-            <p className="text-sm text-white/70 mb-2">Stage {stageNumber} of 4</p>
-            <h1 className="text-xl lg:text-3xl text-white mb-2 lg:mb-4">{title}</h1>
+        <div className="relative z-10 flex justify-center items-start p-8 pb-2 lg:pb-4 w-full">
+          <div className="flex flex-col items-center text-center w-full">
+            <p className="text-sm text-white/70 mb-2 text-center">Stage {stageNumber} of 4</p>
+            <h1 className="text-xl lg:text-3xl text-white mb-2 lg:mb-4 text-center">{title}</h1>
             
             {/* Mobile Remember Text - Hidden as requested */}
             <div className="hidden">
@@ -263,35 +283,56 @@ export function DrawingStage({
           </div>
         </div>
 
-        {/* Mobile Color Palette - Directly under title */}
+        {/* Mobile Color Palette - Moved down further */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="relative z-10 flex justify-center px-8 mb-2 lg:hidden"
+          className="relative z-10 flex justify-center px-8 mb-4 mt-12 lg:hidden"
         >
           <div className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 shadow-lg transition-all duration-500 ${
             showColorHint ? 'shadow-yellow-300/40 shadow-2xl ring-2 ring-yellow-300/30' : ''
           }`}>
             <div className="flex space-x-2 justify-center">
               {colorPalette.map((colorOption) => (
-                <Tooltip key={colorOption.color}>
+                <Tooltip key={colorOption.color} open={mobileTooltipOpen === colorOption.color} onOpenChange={(open) => {
+                  if (!open) setMobileTooltipOpen(null);
+                }}>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setSelectedColor(colorOption.color)}
-                      className={`mobile-interactive relative w-10 h-10 rounded-lg transition-all duration-200 z-50 ${
+                      onClick={() => {
+                        // 在手机端，点击时同时选择颜色并显示tooltip信息
+                        if (window.innerWidth < 1024) {
+                          // 如果点击了其他颜色，立刻关闭当前tooltip
+                          if (mobileTooltipOpen && mobileTooltipOpen !== colorOption.color) {
+                            setMobileTooltipOpen(null);
+                          }
+                          
+                          // 同时选择颜色和显示tooltip
+                          setSelectedColor(colorOption.color);
+                          setMobileTooltipOpen(colorOption.color);
+                          // 6秒后自动关闭tooltip
+                          setTimeout(() => setMobileTooltipOpen(null), 6000);
+                        } else {
+                          // 桌面端直接选择颜色
+                          setSelectedColor(colorOption.color);
+                        }
+                      }}
+                      className={`mobile-interactive relative w-12 h-10 rounded-lg transition-all duration-200 z-50 ${
                         selectedColor === colorOption.color 
-                          ? 'ring-2 ring-white/90 shadow-lg scale-110' 
+                          ? 'ring-3 ring-white shadow-xl scale-110 shadow-white/30' 
+                          : mobileTooltipOpen === colorOption.color
+                          ? 'ring-2 ring-blue-300/70 shadow-lg scale-105'
                           : 'ring-1 ring-white/40 hover:ring-white/60 shadow-md hover:scale-105'
                       }`}
                       style={{ backgroundColor: colorOption.color }}
                     >
-                      {/* Simple selection indicator */}
+                      {/* Enhanced selection indicator */}
                       {selectedColor === colorOption.color && (
                         <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute inset-2 bg-white/30 rounded-sm"
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="absolute inset-1 bg-white/40 rounded-md border border-white/60"
                         />
                       )}
                     </button>
@@ -325,7 +366,7 @@ export function DrawingStage({
         </motion.div>
 
         {/* Main Layout - Canvas and Color Palette */}
-        <div className="relative z-10 flex items-center justify-center px-8 pb-8 h-[calc(100dvh-180px)] lg:h-[calc(100vh-140px)]">
+        <div className="relative z-10 flex items-center justify-center px-8 pb-8 h-[calc(100dvh-240px)] lg:h-[calc(100vh-140px)]">
 
           {/* Canvas Container - Centered with maximum size */}
           <motion.div
@@ -336,21 +377,7 @@ export function DrawingStage({
           >
 
             <div className="relative">
-              {/* Color Selection Hint Above Canvas - Only show in Stage 1 */}
-              {stageNumber === 1 && !selectedColor && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="absolute -top-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none"
-                >
-                  <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-6 py-3 rounded-xl shadow-md border border-white/50 max-w-xs text-center">
-                    <p className="text-sm leading-relaxed">
-                      Each color holds a meaning. Let your heart choose.
-                    </p>
-                  </div>
-                </motion.div>
-              )}
+
               
               <MandalaCanvas
                 size={typeof window !== 'undefined' ? Math.min(

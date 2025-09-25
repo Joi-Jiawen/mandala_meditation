@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
+import { AudioToggle } from './AudioToggle';
 
 interface PreparationStageProps {
   title?: string;
@@ -10,6 +11,8 @@ interface PreparationStageProps {
   prompt?: string;
   note?: string;
   onComplete: () => void;
+  audioEnabled: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
 }
 
 export function PreparationStage({ 
@@ -18,7 +21,9 @@ export function PreparationStage({
   initialText = "Find a comfortable position. Take a few deep breaths.",
   prompt = "Recall warm feelings of kindness for yourself – you deserve your own love.",
   note = "Let these feelings fill your heart as you prepare to create.",
-  onComplete 
+  onComplete,
+  audioEnabled,
+  setAudioEnabled 
 }: PreparationStageProps) {
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
   const [breathCount, setBreathCount] = useState(0);
@@ -117,7 +122,13 @@ export function PreparationStage({
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+    <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden py-12">
+      {/* Audio Toggle */}
+      <AudioToggle 
+        audioEnabled={audioEnabled}
+        setAudioEnabled={setAudioEnabled}
+      />
+
       {/* Calming Background */}
       <div className={`absolute inset-0 z-0 bg-gradient-to-br ${getBackgroundGradient()}`}>
         {/* Floating Lotus Petals or Universal Particles */}
@@ -198,129 +209,123 @@ export function PreparationStage({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center space-y-12 px-6 max-w-2xl">
-        {/* Title */}
+      <div className="relative z-10 text-center space-y-12 md:space-y-24 px-6 max-w-4xl">
+        {/* Text Section with Frame */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="space-y-6"
+          className="space-y-8"
         >
-          <h2 className="text-3xl text-white">
+          <h2 className="text-2xl md:text-4xl text-white">
             {title}
           </h2>
           
-          {/* Transitioning Text */}
-          <div className="min-h-[4rem] flex flex-col justify-center">
-            <AnimatePresence mode="wait">
-              {showInitialText ? (
-                <motion.p
-                  key="initial"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="text-lg text-white/80 leading-relaxed"
-                >
-                  {initialText}
-                </motion.p>
-              ) : (
-                <motion.div
-                  key="prompt"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="space-y-2"
-                >
-                  <p className="text-lg text-white/80 leading-relaxed">
-                    {prompt}
-                  </p>
-                  <p className="text-white/60 text-sm">
-                    {note}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Text Frame */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-xl">
+            <div className="min-h-[6rem] flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                {showInitialText ? (
+                  <motion.p
+                    key="initial"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="text-lg md:text-xl text-white/90 leading-relaxed"
+                  >
+                    {initialText}
+                  </motion.p>
+                ) : (
+                  <motion.div
+                    key="prompt"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="space-y-4"
+                  >
+                    <p className="text-lg md:text-xl text-white/90 leading-relaxed">
+                      {prompt}
+                    </p>
+                    <p className="text-white/70 text-sm md:text-base">
+                      {note}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.div>
 
-        {/* Breathing Circle */}
+        {/* Breathing Section */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="flex flex-col items-center space-y-8"
+          className="flex flex-col items-center space-y-8 mt-8"
         >
-          <div className="relative">
-            {/* Outer Ring */}
-            <motion.div
-              className="w-48 h-48 border-2 border-white/30 rounded-full flex items-center justify-center"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-            >
-              {/* Inner Breathing Circle */}
+            <div className="relative">
+              {/* Outer Ring */}
               <motion.div
-                className="w-24 h-24 bg-gradient-to-br from-white/20 to-white/10 rounded-full backdrop-blur-sm shadow-lg flex items-center justify-center"
-                animate={{ scale: getCircleScale() }}
-                transition={{ 
-                  duration: getAnimationDuration(),
-                  ease: "easeInOut"
-                }}
+                className="w-56 h-56 border-2 border-white/30 rounded-full flex items-center justify-center"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
               >
+                {/* Inner Breathing Circle */}
                 <motion.div
-                  className="w-12 h-12 bg-white/30 rounded-full"
-                  animate={{ 
-                    opacity: [0.3, 1, 0.3],
-                    scale: [0.8, 1.2, 0.8]
-                  }}
+                  className="w-28 h-28 bg-gradient-to-br from-white/20 to-white/10 rounded-full backdrop-blur-sm shadow-lg flex items-center justify-center"
+                  animate={{ scale: getCircleScale() }}
                   transition={{ 
                     duration: getAnimationDuration(),
                     ease: "easeInOut"
                   }}
-                />
+                >
+                  <motion.div
+                    className="w-14 h-14 bg-white/30 rounded-full"
+                    animate={{ 
+                      opacity: [0.3, 1, 0.3],
+                      scale: [0.8, 1.2, 0.8]
+                    }}
+                    transition={{ 
+                      duration: getAnimationDuration(),
+                      ease: "easeInOut"
+                    }}
+                  />
+                </motion.div>
               </motion.div>
-            </motion.div>
 
-            {/* Ripple Effect */}
-            <motion.div
-              className="absolute inset-0 border-2 border-white/20 rounded-full"
-              animate={{ 
-                scale: [1, 1.5],
-                opacity: [0.5, 0]
-              }}
-              transition={{ 
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeOut"
-              }}
-            />
-          </div>
+              {/* Ripple Effect */}
+              <motion.div
+                className="absolute inset-0 border-2 border-white/20 rounded-full"
+                animate={{ 
+                  scale: [1, 1.5],
+                  opacity: [0.5, 0]
+                }}
+                transition={{ 
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeOut"
+                }}
+              />
+            </div>
 
-          {/* Breathing Instructions */}
-          <motion.p
-            className="text-xl text-white/90 min-h-[2rem]"
-            key={breathingPhase}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {getBreathingInstructions()}
-          </motion.p>
+            {/* Breathing Instructions */}
+            <motion.p
+              className="text-lg md:text-xl text-white/90 min-h-[2rem]"
+              key={breathingPhase}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {getBreathingInstructions()}
+            </motion.p>
         </motion.div>
 
 
 
-        {/* Breath Counter */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2 }}
-          className="text-white/50 text-sm"
-        >
-          Breath cycle: {breathCount + 1}
-        </motion.div>
+
       </div>
 
       {/* Continue Button */}

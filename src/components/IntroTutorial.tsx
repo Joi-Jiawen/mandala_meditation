@@ -3,10 +3,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { AudioToggle } from './AudioToggle';
 import imgImage57 from "figma:asset/75e278b027357d5ee0710e360591dffc0bb4b078.png";
 
 interface IntroTutorialProps {
   onComplete: () => void;
+  audioEnabled: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
 }
 
 interface SandHill {
@@ -18,7 +21,7 @@ interface SandHill {
   symmetryPoints: Array<{ x: number; y: number }>;
 }
 
-export function IntroTutorial({ onComplete }: IntroTutorialProps) {
+export function IntroTutorial({ onComplete, audioEnabled, setAudioEnabled }: IntroTutorialProps) {
   const [currentScene, setCurrentScene] = useState(0);
   const [sandHills, setSandHills] = useState<SandHill[]>([]);
   const [isPouring, setIsPouring] = useState(false);
@@ -174,6 +177,12 @@ export function IntroTutorial({ onComplete }: IntroTutorialProps) {
         />
         <div className="absolute inset-0 bg-black/50" />
       </div>
+
+      {/* Audio Toggle */}
+      <AudioToggle 
+        audioEnabled={audioEnabled}
+        setAudioEnabled={setAudioEnabled}
+      />
 
       {/* Floating Guide Orb */}
       <motion.div

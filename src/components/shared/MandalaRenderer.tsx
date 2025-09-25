@@ -248,7 +248,7 @@ function CanvasRenderer({ mandalaData, viewSize, padding, hillSizeMultiplier, op
         height: viewSize, 
         overflow: 'visible',
         borderRadius: '50%',
-        clipPath: 'circle(50% at 50% 50%)'
+        clipPath: 'circle(48% at 50% 50%)' // 稍微小一点确保边缘完整显示
       }}
     />
   );

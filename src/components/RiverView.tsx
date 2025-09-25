@@ -1,16 +1,25 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { AudioToggle } from './AudioToggle';
 import imgImage61 from "figma:asset/73a48179bd1fa9cc566cb1c91f3a9199dc51f8ff.png";
 
 interface RiverViewProps {
   onReturnHome: () => void;
   journalEntries: Record<string, string>;
+  audioEnabled: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
 }
 
-export function RiverView({ onReturnHome }: RiverViewProps) {
+export function RiverView({ onReturnHome, audioEnabled, setAudioEnabled }: RiverViewProps) {
 
   return (
     <div className="relative w-full h-full overflow-hidden">
+      {/* Audio Toggle */}
+      <AudioToggle 
+        audioEnabled={audioEnabled}
+        setAudioEnabled={setAudioEnabled}
+      />
+
       {/* Lake Sunset Background */}
       <div className="absolute inset-0 z-0">
         <div 
