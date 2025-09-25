@@ -7,6 +7,7 @@ import { DrawingStage } from './components/DrawingStage';
 import { ReflectionComponent } from './components/ReflectionComponent';
 import { ReleaseStage } from './components/ReleaseStage';
 import { RiverView } from './components/RiverView';
+import { useBackgroundMusic } from './hooks/useBackgroundMusic';
 
 import { parseMandalaData, type MandalaData } from './components/shared/MandalaRenderer';
 
@@ -114,6 +115,9 @@ export default function App() {
   const [mandalaLayers, setMandalaLayers] = useState<MandalaLayer[]>([]);
   const [journalEntries, setJournalEntries] = useState<Record<string, string>>({});
   const [audioEnabled, setAudioEnabled] = useState(true);
+  
+  // 在App级别管理背景音乐，确保整个应用连续播放
+  useBackgroundMusic(audioEnabled);
   
   // 存储完整的曼陀罗数据，在stage4完成后生成
   const [completeMandalaData, setCompleteMandalaData] = useState<MandalaData | null>(null);

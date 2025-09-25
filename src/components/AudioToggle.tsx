@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { Button } from './ui/button';
-import { useBackgroundMusic } from '../hooks/useBackgroundMusic';
 
 interface AudioToggleProps {
   audioEnabled: boolean;
@@ -11,9 +10,6 @@ interface AudioToggleProps {
 }
 
 export function AudioToggle({ audioEnabled, setAudioEnabled, className = "" }: AudioToggleProps) {
-  // 使用背景音乐hook
-  useBackgroundMusic(audioEnabled);
-
   return (
     <motion.div
       initial={{ opacity: 0 }}

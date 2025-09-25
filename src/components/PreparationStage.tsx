@@ -295,17 +295,18 @@ export function PreparationStage({
                 </motion.div>
               </motion.div>
 
-              {/* Ripple Effect */}
+              {/* Ripple Effect with smooth fade */}
               <motion.div
                 className="absolute inset-0 border-2 border-white/20 rounded-full"
                 animate={{ 
                   scale: [1, 1.5],
-                  opacity: [0.5, 0]
+                  opacity: [0.4, 0.3, 0.1, 0]
                 }}
                 transition={{ 
                   duration: 4,
                   repeat: Infinity,
-                  ease: "easeOut"
+                  ease: [0.4, 0, 0.2, 1], // 自定义贝塞尔曲线，更平滑的淡出
+                  times: [0, 0.4, 0.8, 1] // 透明度在80%时接近0
                 }}
               />
             </div>

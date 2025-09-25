@@ -377,8 +377,22 @@ export function DrawingStage({
           >
 
             <div className="relative">
+              {/* Color Selection Hint Above Canvas - Only show in Stage 1 */}
+              {stageNumber === 1 && !selectedColor && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="absolute -top-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none"
+                >
+                  <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-6 py-3 rounded-xl shadow-md border border-white/50 max-w-xs text-center">
+                    <p className="text-sm leading-relaxed">
+                      Each color holds a meaning. Let your heart choose.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
 
-              
               <MandalaCanvas
                 size={typeof window !== 'undefined' ? Math.min(
                   800, // Maximum size increased
