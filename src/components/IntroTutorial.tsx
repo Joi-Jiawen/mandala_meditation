@@ -47,7 +47,7 @@ export function IntroTutorial({ onComplete, audioEnabled, setAudioEnabled }: Int
     {
       title: "Try It Now",
       text: "Try pouring sand now with your finger. Watch how it creates a beautiful symmetric pattern.",
-      narration: "There is no right or wrong in your drawing. Just an expression of yourself."
+      narration: ""
     }
   ];
 
@@ -231,7 +231,7 @@ export function IntroTutorial({ onComplete, audioEnabled, setAudioEnabled }: Int
             {/* Content Card */}
             <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center space-y-6">
               <motion.h2
-                className="text-3xl text-white drop-shadow-lg"
+                className="text-2xl md:text-3xl text-white drop-shadow-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
@@ -240,7 +240,7 @@ export function IntroTutorial({ onComplete, audioEnabled, setAudioEnabled }: Int
               </motion.h2>
 
               <motion.p
-                className="text-lg text-white/90 drop-shadow-md leading-relaxed"
+                className="text-base md:text-lg text-white/90 drop-shadow-md leading-relaxed"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -248,14 +248,16 @@ export function IntroTutorial({ onComplete, audioEnabled, setAudioEnabled }: Int
                 {scenes[currentScene].text}
               </motion.p>
 
-              <motion.p
-                className="text-base text-white/80 drop-shadow-md italic leading-relaxed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
-                {scenes[currentScene].narration}
-              </motion.p>
+              {scenes[currentScene].narration && (
+                <motion.p
+                  className="text-sm md:text-base text-white/80 drop-shadow-md italic leading-relaxed"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  {scenes[currentScene].narration}
+                </motion.p>
+              )}
 
               {/* Practice Canvas for Scene 3 */}
               {currentScene === 2 && (

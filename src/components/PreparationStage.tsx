@@ -311,9 +311,9 @@ export function PreparationStage({
               />
             </div>
 
-            {/* Breathing Instructions */}
+            {/* Breathing Instructions - Hidden on mobile */}
             <motion.p
-              className="text-lg md:text-xl text-white/90 min-h-[2rem]"
+              className="hidden md:block text-lg md:text-xl text-white/90 min-h-[2rem]"
               key={breathingPhase}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
